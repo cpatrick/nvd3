@@ -96,7 +96,7 @@ nv.models.bullet = function() {
       g.select('rect.nv-rangeMax')
           .attr('height', availableHeight)
           .attr('width', w1(rangeMax > 0 ? rangeMax : rangeMin))
-          .attr('x', xp1(rangeMax > 0 ? rangeMax : rangeMin))
+          .attr('x', x1(rangeMax > 0 ? rangeMax : rangeMin))
           .datum(rangeMax > 0 ? rangeMax : rangeMin)
           /*
           .attr('x', rangeMin < 0 ?
@@ -109,7 +109,7 @@ nv.models.bullet = function() {
       g.select('rect.nv-rangeAvg')
           .attr('height', availableHeight)
           .attr('width', w1(rangeAvg))
-          .attr('x', xp1(rangeAvg))
+          .attr('x', x1(rangeAvg))
           .datum(rangeAvg)
           /*
           .attr('width', rangeMax <= 0 ?
@@ -123,9 +123,9 @@ nv.models.bullet = function() {
       g.select('rect.nv-rangeMin')
           .attr('height', availableHeight)
           .attr('width', w1(rangeMax))
-          .attr('x', xp1(rangeMax))
+          .attr('x', x1(rangeMax))
           .attr('width', w1(rangeMax > 0 ? rangeMin : rangeMax))
-          .attr('x', xp1(rangeMax > 0 ? rangeMin : rangeMax))
+          .attr('x', x1(rangeMax > 0 ? rangeMin : rangeMax))
           .datum(rangeMax > 0 ? rangeMin : rangeMax)
           /*
           .attr('width', rangeMax <= 0 ?
@@ -136,14 +136,19 @@ nv.models.bullet = function() {
                        : x1(rangeAvg))
                       */
 
+      var measureWidth = Math.abs(measurez < 0 ?
+          x1(0) - x1(measurez[0]) : x1(measurez[0]) - x1(0));
+      if (reverse) {
+          measureWidth = availableWidth - measureWidth;
+          measureWidth = measureWidth < 0 ? 0 : measureWidth;
+      }
+
       g.select('rect.nv-measure')
           .style('fill', color)
           .attr('height', availableHeight / 3)
           .attr('y', availableHeight / 3)
-          .attr('width', measurez < 0 ?
-                             x1(0) - x1(measurez[0])
-                           : x1(measurez[0]) - x1(0))
-          .attr('x', xp1(measurez))
+          .attr('width', measureWidth)
+          .attr('x', margin.left)
           .on('mouseover', function() {
               dispatch.elementMouseover({
                 value: measurez[0],
@@ -210,14 +215,14 @@ nv.models.bullet = function() {
           .attr('width', w0)
           .attr('height', availableHeight)
           .attr('x', reverse ? x0 : 0)
-          .on('mouseover', function(d,i) { 
+          .on('mouseover', function(d,i) {
               dispatch.elementMouseover({
                 value: d,
                 label: (i <= 0) ? 'Maximum' : (i > 1) ? 'Minimum' : 'Mean', //TODO: make these labels a variable
                 pos: [x1(d), availableHeight/2]
               })
           })
-          .on('mouseout', function(d,i) { 
+          .on('mouseout', function(d,i) {
               dispatch.elementMouseout({
                 value: d,
                 label: (i <= 0) ? 'Minimum' : (i >=1) ? 'Maximum' : 'Mean' //TODO: make these labels a variable
@@ -241,14 +246,14 @@ nv.models.bullet = function() {
           .attr('height', availableHeight / 3)
           .attr('x', reverse ? x0 : 0)
           .attr('y', availableHeight / 3)
-          .on('mouseover', function(d) { 
+          .on('mouseover', function(d) {
               dispatch.elementMouseover({
                 value: d,
                 label: 'Current', //TODO: make these labels a variable
                 pos: [x1(d), availableHeight/2]
               })
           })
-          .on('mouseout', function(d) { 
+          .on('mouseout', function(d) {
               dispatch.elementMouseout({
                 value: d,
                 label: 'Current' //TODO: make these labels a variable
@@ -307,7 +312,7 @@ nv.models.bullet = function() {
   chart.dispatch = dispatch;
 
   chart.options = nv.utils.optionsFunc.bind(chart);
-  
+
   // left, right, top, bottom
   chart.orient = function(_) {
     if (!arguments.length) return orient;
@@ -381,5 +386,3 @@ nv.models.bullet = function() {
 
   return chart;
 };
-
-

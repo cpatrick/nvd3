@@ -259,13 +259,18 @@ nv.models.bulletChart = function() {
   d3.rebind(chart, bullet, 'color');
 
   chart.options = nv.utils.optionsFunc.bind(chart);
-  
+
   // left, right, top, bottom
   chart.orient = function(x) {
     if (!arguments.length) return orient;
     orient = x;
     reverse = orient == 'right' || orient == 'bottom';
+    chart.bullet.orient(x);
     return chart;
+  };
+
+  chart.color = function(x) {
+    return chart.bullet.color(x);
   };
 
   // ranges (bad, satisfactory, good)
@@ -339,5 +344,3 @@ nv.models.bulletChart = function() {
 
   return chart;
 };
-
-
